@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IoT Tobacco Curing Chamber</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #2e7d32;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #1b5e20;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 10px;
+      background: #e8f5e9;
+      border-left: 5px solid #2e7d32;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #777;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>IoT-Based Tobacco Curing Chamber</h1>
+  <p>Web Control Panel</p>
+</header>
+
+<div class="container">
+
+  <h2>Temperature & Humidity Control</h2>
+
+  <label for="daySelect">Select Day</label>
+  <select id="daySelect">
+    <option value="55">Day 1 – 55°C</option>
+    <option value="49">Day 2 – 49°C</option>
+    <option value="38">Day 3 – 38°C</option>
+    <option value="30">Day 4 – 30°C</option>
+  </select>
+
+  <label for="temp">Set Temperature (°C)</label>
+  <input type="number" id="temp" placeholder="Enter Temperature">
+
+  <label for="humidity">Humidity Limit (%)</label>
+  <input type="number" id="humidity" value="70">
+
+  <button onclick="updateValues()">Update Values</button>
+
+  <div class="status" id="statusBox">
+    Status: Waiting for input...
+  </div>
+
+</div>
+
+<footer>
+  © IoT Tobacco Curing Chamber | ESP8266 + Firebase
+</footer>
+
+<script>
+  // 🔥 Firebase Configuration (REPLACE WITH YOUR DETAILS)
+  var firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "your-project.firebaseapp.com",
+    databaseURL: "https://your-project.firebaseio.com",
+    projectId: "your-project",
+    storageBucket: "your-project.appspot.com",
+    messagingSenderId: "XXXXXXX",
+    appId: "XXXXXXX"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  var database = firebase.database();
+
+  // Auto-fill temperature when day selected
+  document.getElementById("daySelect").addEventListener("change", function () {
+    document.getElementById("temp").value = this.value;
+  });
+
+  function updateValues() {
+    var tempValue = document.getElementById("temp").value;
+    var humidityValue = document.getElementById("humidity").value;
+
+    if (tempValue === "" || humidityValue === "") {
+      alert("Please enter all values");
+      return;
+    }
+
+    database.ref("curing").set({
+      setTemp: parseFloat(tempValue),
+      humidityLimit: parseFloat(humidityValue)
+    });
+
+    document.getElementById("statusBox").innerHTML =
+      "Updated Successfully ✔<br>Temperature: " + tempValue +
+      " °C<br>Humidity Limit: " + humidityValue + " %";
+  }
+</script>
+
+</body>
+</html>
